@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="scan.daily">
+<title>scan.daily 업로드</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  --bg: #F4F3EF; --card: #FFFFFF; --ink: #111317; --soft: #5B6270; --line: #E2E0DA;
+  --accent: #E5484D; --point: #2F7BF5; --ok: #1F9D55; --warn: #C27803; --btn: #111317; --btn-ink: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0E0F12; --card: #17191E; --ink: #F2F3F5; --soft: #9AA1AD; --line: #2A2E36; --btn: #F2F3F5; --btn-ink: #111317; --point: #4C9AFF; }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif; letter-spacing: -0.01em; padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px); }
+header { padding: 18px 16px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
+header button { background: none; border: 0; color: var(--soft); font-size: 14px; }
+main { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+.lock { margin-top: 18vh; text-align: center; }
+.lock h2 { font-size: 20px; margin-bottom: 18px; }
+.lock input { width: 100%; font-size: 18px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+.lock label { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 12px; color: var(--soft); font-size: 14px; }
+.err { color: var(--accent); margin-top: 10px; min-height: 22px; font-size: 14px; }
+.card { background: var(--card); border-radius: 18px; padding: 16px; margin-top: 14px; border: 1px solid var(--line); }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.top .t { font-weight: 800; font-size: 18px; }
+.top .w { color: var(--soft); font-size: 14px; }
+.badge { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.badge.ok { background: rgba(31,157,85,.14); color: var(--ok); }
+.badge.warn { background: rgba(194,120,3,.15); color: var(--warn); }
+.badge.backup { background: rgba(229,72,77,.14); color: var(--accent); }
+.flags { margin-top: 10px; font-size: 14px; color: var(--warn); }
+.flags li { margin-left: 18px; }
+.preview { width: 100%; border-radius: 12px; margin-top: 12px; display: block; background: #222; min-height: 120px; }
+.review { margin-top: 12px; font-size: 14px; color: var(--soft); }
+.review li { list-style: none; padding-left: 14px; position: relative; }
+.review li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--soft); }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.btn { appearance: none; border: 0; border-radius: 14px; padding: 15px 12px; font-size: 16px; font-weight: 800; background: var(--btn); color: var(--btn-ink); width: 100%; }
+.btn.sub { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 700; }
+.btn:disabled { opacity: .45; }
+.btn.done { background: var(--ok); color: #fff; }
+.row { display: flex; gap: 10px; margin-top: 10px; }
+.sec { margin-top: 16px; }
+.sec h3 { font-size: 13px; color: var(--soft); font-weight: 700; margin-bottom: 6px; }
+.bgm li { list-style: none; font-size: 15px; padding: 4px 0; }
+.opinion { font-size: 15px; background: var(--bg); border-radius: 12px; padding: 12px; }
+.caption { font-size: 14px; white-space: pre-wrap; background: var(--bg); border-radius: 12px; padding: 12px; max-height: 180px; overflow: auto; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.grid a { position: relative; display: block; }
+.grid img { width: 100%; border-radius: 8px; display: block; aspect-ratio: 4/5; object-fit: cover; background: #222; }
+.grid span { position: absolute; left: 5px; top: 5px; background: rgba(0,0,0,.7); color: #fff; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 5px; }
+.hint { font-size: 12px; color: var(--soft); margin-top: 8px; }
+details.past { margin-top: 10px; }
+details.past summary { list-style: none; cursor: pointer; padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; display: flex; justify-content: space-between; gap: 8px; }
+details.past summary::-webkit-details-marker { display: none; }
+details.past[open] summary { border-radius: 14px 14px 0 0; }
+details.past .card { margin-top: 0; border-radius: 0 0 14px 14px; border-top: 0; }
+.section-title { margin: 26px 0 4px; font-size: 13px; color: var(--soft); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 24px); transform: translateX(-50%); background: var(--btn); color: var(--btn-ink); padding: 10px 16px; border-radius: 99px; font-size: 14px; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.on { opacity: 1; }
+.viewer { position: fixed; inset: 0; background: rgba(0,0,0,.92); display: none; align-items: center; justify-content: center; z-index: 10; flex-direction: column; gap: 10px; }
+.viewer img { max-width: 100%; max-height: 82vh; }
+.viewer p { color: #ccc; font-size: 13px; }
+/* 전체 화면 시트: 제작 과정(팀별) · 설정 */
+.sheet { position: fixed; inset: 0; z-index: 9; background: var(--bg); display: none; flex-direction: column; }
+.sheet.on { display: flex; }
+.sheet-head { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top) + 12px) 16px 10px; }
+.sheet-head b { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sheet-head button { flex: none; background: none; border: 0; color: var(--point); font-size: 16px; font-weight: 700; padding: 8px 0 8px 12px; }
+.tabs { flex: none; display: flex; gap: 6px; overflow-x: auto; padding: 0 16px 10px; border-bottom: 1px solid var(--line); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs:empty { display: none; }
+.tab { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px; padding: 8px 14px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.tab.on { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+.sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 14px 16px calc(env(safe-area-inset-bottom) + 32px); }
+.sheet-in { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.kpi small { display: block; color: var(--soft); font-size: 12px; }
+.kpi b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.teamrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; color: var(--ink); font: inherit; }
+.teamrow .nm { font-weight: 800; font-size: 15.5px; white-space: nowrap; }
+.teamrow .du { color: var(--soft); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; align-self: center; }
+.teamrow .sm { grid-column: 1 / 3; color: var(--soft); font-size: 13.5px; }
+.sheet-in h4 { margin: 10px 0 0; font-size: 13px; color: var(--soft); font-weight: 700; letter-spacing: .01em; }
+.meta { color: var(--soft); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.it { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; overflow-wrap: anywhere; }
+.it .t { font-weight: 700; }
+.it .s { color: var(--soft); font-size: 13px; margin-top: 3px; }
+.it a { color: var(--point); text-decoration: none; }
+.fold { display: flex; flex-direction: column; gap: 8px; }
+.rest { display: flex; flex-direction: column; gap: 8px; }
+.rest[hidden] { display: none; }
+.morebtn { width: 100%; padding: 11px; border: 1px dashed var(--line); background: none; color: var(--point); border-radius: 12px; font-size: 14px; font-weight: 700; }
+.srow { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.srow:last-child { border-bottom: 0; }
+.srow .n { font-weight: 800; color: var(--soft); font-variant-numeric: tabular-nums; }
+.srow .s { color: var(--soft); font-size: 13px; margin-top: 2px; white-space: pre-line; }
+.chip { display: inline-block; white-space: nowrap; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: rgba(47,123,245,.12); color: var(--point); margin-right: 4px; vertical-align: 1px; }
+.chip.r { background: rgba(229,72,77,.12); color: var(--accent); }
+.chip.g { background: rgba(31,157,85,.14); color: var(--ok); }
+.chip.y { background: rgba(194,120,3,.15); color: var(--warn); }
+.q { color: var(--soft); font-size: 13px; border-left: 2px solid var(--line); padding-left: 8px; margin-top: 4px; }
+.clamp { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp + .moretxt { display: inline-block; color: var(--point); font-size: 13px; font-weight: 700; margin-top: 2px; }
+.moretxt { display: none; }
+.scorebar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.scorebar div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; text-align: center; }
+.scorebar small { display: block; color: var(--soft); font-size: 11.5px; }
+.scorebar b { font-size: 16px; font-variant-numeric: tabular-nums; }
+/* 설정 */
+.set { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.set label { display: block; font-weight: 700; font-size: 15px; }
+.set .s { color: var(--soft); font-size: 12.5px; margin-top: 2px; }
+.set .in { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.set input { font: inherit; font-size: 17px; font-variant-numeric: tabular-nums; width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.set .w4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+.set .w4 span { display: block; color: var(--soft); font-size: 12px; margin-bottom: 3px; }
+.set.changed { border-color: var(--point); }
+.cmd { font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<header><h1>scan.daily 업로드</h1><span><button id="openSettings" hidden>설정</button> <button id="logout" hidden>잠그기</button></span></header>
+<main id="app">
+  <div class="lock" id="lock">
+    <h2>운영자 암호</h2>
+    <form id="lockForm"><input id="pw" type="password" autocomplete="current-password" placeholder="암호 입력" autofocus>
+      <label><input type="checkbox" id="remember" checked> 이 기기에서 기억</label>
+      <div class="err" id="err"></div>
+      <button class="btn" type="submit" style="margin-top:6px">열기</button>
+    </form>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="sheet-head"><b id="sheetTitle"></b><button id="sheetClose">닫기</button></div><div class="tabs" id="sheetTabs"></div><div class="sheet-body" id="sheetBody"></div></div>
+<div class="viewer" id="viewer"><img id="viewerImg" alt=""><p>길게 눌러 사진에 저장 · 탭하면 닫기</p></div>
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const STORE = "scandaily.pw";
+let KEY = null;
+const cache = new Map();   // rel path -> Blob
+const urls = new Map();
+
+const ls = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 1800); }
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function deriveKey(pw) {
+  const meta = await (await fetch("meta.json", { cache: "no-store" })).json();
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(meta.salt), iterations: meta.iterations, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+}
+async function dec(rel, type = "application/octet-stream", fresh = false) {
+  if (!fresh && cache.has(rel)) return cache.get(rel);
+  const res = await fetch(rel, { cache: fresh ? "no-store" : "default" });
+  if (!res.ok) throw new Error(rel + " " + res.status);
+  const buf = new Uint8Array(await res.arrayBuffer());
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, KEY, buf.slice(12));
+  const blob = new Blob([plain], { type });
+  cache.set(rel, blob);
+  return blob;
+}
+async function decJSON(rel) { return JSON.parse(await (await dec(rel, "application/json", true)).text()); }
+async function imgURL(rel) {
+  if (urls.has(rel)) return urls.get(rel);
+  const u = URL.createObjectURL(await dec(rel, "image/jpeg"));
+  urls.set(rel, u);
+  return u;
+}
+
+async function unlock(pw, remember) {
+  KEY = await deriveKey(pw);
+  const ok = await dec("check.enc", "text/plain", true).then(b => b.text()).then(t => t === "scan.daily v3").catch(() => false);
+  if (!ok) { KEY = null; throw new Error("암호가 맞지 않아요"); }
+  if (remember) ls.set(STORE, pw);
+  $("#logout").hidden = false;
+  fetch("settings.enc", { method: "HEAD" }).then(r => { $("#openSettings").hidden = !r.ok; }).catch(() => {});
+  await renderList();
+}
+
+const fmtDate = d => { const x = new Date(d + "T00:00:00"); return `${x.getMonth() + 1}.${String(x.getDate()).padStart(2, "0")} (${"일월화수목금토"[x.getDay()]})`; };
+function badge(e) {
+  if (e.kind === "backup") return '<span class="badge backup">예비 콘텐츠</span>';
+  if (e.status === "passed") return '<span class="badge ok">검수 통과</span>';
+  return '<span class="badge warn">확인 필요</span>';
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+async function renderList() {
+  const app = $("#app");
+  const index = await decJSON("index.enc");
+  app.innerHTML = "";
+  if (!index.length) { app.innerHTML = '<div class="card">아직 올라온 회차가 없어요.</div>'; return; }
+  const [latest, ...past] = index;
+  const box = document.createElement("div");
+  app.appendChild(box);
+  await renderEdition(box, latest, true);
+  if (past.length) {
+    const h = document.createElement("div"); h.className = "section-title"; h.textContent = "지난 회차"; app.appendChild(h);
+    for (const e of past) {
+      const d = document.createElement("details"); d.className = "past";
+      d.innerHTML = `<summary><span><b>${fmtDate(e.date)} ${esc(e.label)}</b> · ${e.count}장</span>${badge(e)}</summary><div></div>`;
+      d.addEventListener("toggle", () => { if (d.open && !d._done) { d._done = true; renderEdition(d.lastElementChild, e, false); } });
+      app.appendChild(d);
+    }
+  }
+}
+
+async function renderEdition(el, e, isLatest) {
+  const m = await decJSON(`e/${e.id}/manifest.enc`);
+  const base = `e/${e.id}/`;
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `
+    <div class="top"><div><div class="t">${fmtDate(m.date)} ${esc(m.label)}</div><div class="w">게시 ${esc(m.post_window)} · ${m.slides.length}장</div></div>${badge(m)}</div>
+    ${m.flags && m.flags.length ? `<ul class="flags">${m.flags.map(f => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+    <img class="preview" alt="한 장 미리보기">
+    <ul class="review">${(m.review || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <div class="actions"><button class="btn" data-act="save" disabled>이미지 준비 중…</button><button class="btn sub" data-act="copy">캡션 복사</button></div>
+    <div class="row"><button class="btn sub" data-act="zip">ZIP 받기</button>${m.issue_url ? `<a class="btn sub" style="text-align:center;text-decoration:none" href="${esc(m.issue_url)}" target="_blank" rel="noopener">수정 요청</a>` : ""}</div>
+    ${m.reel ? `<div class="row"><button class="btn sub" data-act="reel">릴스 영상 저장 (${Math.round(m.reel.seconds)}초)</button></div><div class="reelbox" style="margin-top:8px"></div><p class="hint">릴스: '릴스 영상 저장' → 공유 시트에서 "비디오 저장". 사진 앱에 들어간 영상을 인스타그램 릴스에서 고르세요.</p>` : ""}
+    ${m.has_admin ? `<div class="row"><button class="btn sub" data-act="admin">제작 과정 보기 (팀별)</button></div>` : ""}
+    <p class="hint">전체 저장 → 공유 시트에서 "이미지 ${m.slides.length}개 저장"을 누르세요. 사진 앱에 01번부터 순서대로 들어가요.</p>
+    <div class="sec"><h3>BGM 추천</h3><ul class="bgm">${(m.bgm || []).map(b => `<li>♪ ${esc(b)}</li>`).join("")}</ul></div>
+    <div class="sec"><h3>운영자 의견 (마지막 장)</h3><div class="opinion">${esc(m.opinion)}</div></div>
+    <div class="sec"><h3>캡션</h3><div class="caption">${esc(m.caption)}</div></div>
+    <div class="sec"><h3>장별 보기 (탭하면 크게)</h3><div class="grid"></div></div>`;
+  el.appendChild(card);
+  imgURL(base + "preview.enc").then(u => card.querySelector(".preview").src = u);
+
+  const grid = card.querySelector(".grid");
+  const names = m.slides.map(n => n.replace(".jpg", ".enc"));
+  const files = new Array(names.length);
+  await Promise.all(names.map(async (n, i) => {
+    const blob = await dec(base + n, "image/jpeg");
+    files[i] = new File([blob], m.slides[i], { type: "image/jpeg", lastModified: Date.now() + i * 1000 });
+  }));
+  for (let i = 0; i < names.length; i++) {
+    const a = document.createElement("a");
+    const u = await imgURL(base + names[i]);
+    a.href = u; a.innerHTML = `<img src="${u}" alt="${i + 1}장"><span>${String(i + 1).padStart(2, "0")}</span>`;
+    a.addEventListener("click", ev => { ev.preventDefault(); $("#viewerImg").src = u; $("#viewer").style.display = "flex"; });
+    grid.appendChild(a);
+  }
+
+  const saveBtn = card.querySelector('[data-act="save"]');
+  saveBtn.disabled = false; saveBtn.textContent = `전체 저장 (${files.length}장)`;
+  saveBtn.addEventListener("click", async () => {
+    if (navigator.canShare && navigator.canShare({ files })) {
+      try { await navigator.share({ files }); saveBtn.classList.add("done"); saveBtn.textContent = "저장 완료"; }
+      catch (err) { if (err.name !== "AbortError") { toast("공유 시트를 열지 못했어요. ZIP으로 받아 주세요"); } }
+    } else {
+      toast("이 브라우저는 한 번에 저장을 지원하지 않아요. ZIP으로 받을게요");
+      downloadZip();
+    }
+  });
+  card.querySelector('[data-act="copy"]').addEventListener("click", async ev => {
+    const b = ev.currentTarget;
+    try { await navigator.clipboard.writeText(m.caption); }
+    catch { const t = document.createElement("textarea"); t.value = m.caption; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+    b.classList.add("done"); b.textContent = "복사됨"; toast("캡션을 복사했어요 (해시태그 포함)");
+  });
+  async function downloadZip() {
+    const blob = await dec(base + "slides.zip.enc", "application/zip");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `scandaily-${m.id}.zip`; a.click();
+  }
+  card.querySelector('[data-act="zip"]').addEventListener("click", downloadZip);
+  // 릴스: 아이폰은 버튼을 누른 바로 그 순간에만 공유 시트를 열어 줍니다. 그래서 영상을 미리 풀어 두고, 누르면 곧바로 엽니다.
+  const reelBtn = card.querySelector('[data-act="reel"]');
+  if (reelBtn) {
+    const label = reelBtn.textContent;
+    let reelFile = null, reelURL = "";
+    reelBtn.disabled = true; reelBtn.textContent = "릴스 영상 준비 중…";
+    dec(base + "reel.enc", "video/mp4").then(blob => {
+      reelFile = new File([blob], `scandaily-${m.id}-reel.mp4`, { type: "video/mp4", lastModified: Date.now() });
+      reelURL = URL.createObjectURL(blob);
+      reelBtn.disabled = false; reelBtn.textContent = label;
+      const box = card.querySelector(".reelbox");
+      box.innerHTML = `<video controls playsinline preload="metadata" src="${reelURL}" style="width:100%;max-height:70vh;border-radius:12px;background:#000"></video>
+        <a class="btn sub" style="display:block;text-align:center;text-decoration:none;margin-top:8px" href="${reelURL}" download="${reelFile.name}">파일로 받기 (공유가 안 될 때)</a>`;
+    }).catch(() => { reelBtn.textContent = "릴스 영상을 불러오지 못했어요"; });
+    reelBtn.addEventListener("click", () => {
+      if (!reelFile) return;
+      if (navigator.canShare && navigator.canShare({ files: [reelFile] })) {
+        navigator.share({ files: [reelFile] }).catch(err => { if (err.name !== "AbortError") toast("공유 시트를 열지 못했어요. 아래 '파일로 받기'를 눌러 주세요"); });
+      } else {
+        const a = document.createElement("a"); a.href = reelURL; a.download = reelFile.name; a.click();
+      }
+    });
+  }
+  const admBtn = card.querySelector('[data-act="admin"]');
+  if (admBtn) admBtn.addEventListener("click", async () => {
+    const label = admBtn.textContent;
+    admBtn.textContent = "불러오는 중…";
+    try { openAdmin(await decJSON(base + "admin.enc"), m); admBtn.textContent = label; }
+    catch (e) { admBtn.textContent = "제작 과정을 불러오지 못했어요"; }
+  });
+}
+
+const fmtSec = s => s >= 60 ? `${Math.floor(s / 60)}분${s % 60 ? " " + (s % 60) + "초" : ""}` : `${s}초`;
+const usd = v => `$${(+v || 0).toFixed(2)}`;
+const BASIS = { illustration: "직접 그린 그림", press_release: "보도자료", news_provided: "제공 사진", news_photo: "언론사 사진", commons: "무료(Commons)", unsplash: "무료(Unsplash)", self_made: "직접 제작" };
+const ITEM = { stop: "멈춤", understand: "이해", useful: "유익", save: "저장", finish: "완독" };
+const STATUS = { passed: "검수 통과", flagged: "확인 필요", backup: "예비 콘텐츠", failed: "실패" };
+const RISK = { copyright: "저작권", portrait: "초상권", defamation: "명예훼손", investment: "투자 권유", employer: "재직 회사", ai_image: "AI 이미지", politics: "정치 균형", meme: "밈", other: "기타" };
+const LOC = l => l === "caption" ? "캡션" : l.startsWith("slide:") ? l.slice(6) + "장" : l.startsWith("headline:") ? "헤드라인 " + l.slice(9) + "안" : l;
+const NOTE = n => String(n || "").replace(/^toc /, "목차 ").replace(/^summary /, "3줄 정리 ").replace(/^outro /, "마지막 장 ").replace(/^cover /, "표지 ");
+
+/* 전체 화면 시트 */
+function openSheet(title, tabs, render) {
+  const sh = $("#sheet"), tb = $("#sheetTabs"), body = $("#sheetBody");
+  $("#sheetTitle").textContent = title;
+  tb.innerHTML = tabs.map(([k, label]) => `<button class="tab" data-k="${k}">${esc(label)}</button>`).join("");
+  const select = k => {
+    tb.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.k === k));
+    const on = tb.querySelector(".tab.on"); if (on) on.scrollIntoView({ inline: "center", block: "nearest" });
+    body.innerHTML = `<div class="sheet-in">${render(k)}</div>`; body.scrollTop = 0;
+    body.querySelectorAll("[data-go]").forEach(x => x.addEventListener("click", () => select(x.dataset.go)));
+    body.querySelectorAll(".morebtn").forEach(x => x.addEventListener("click", () => { x.previousElementSibling.hidden = false; x.remove(); }));
+    body.querySelectorAll(".clamp").forEach(x => { if (x.scrollHeight <= x.clientHeight + 2) { x.classList.remove("clamp"); return; } const open = () => x.classList.remove("clamp"); x.addEventListener("click", open); x.nextElementSibling.addEventListener("click", open); });
+    if (sh._after) sh._after(k, body);
+  };
+  tb.onclick = ev => { const t = ev.target.closest(".tab"); if (t) select(t.dataset.k); };
+  sh.classList.add("on"); document.body.style.overflow = "hidden";
+  select(tabs.length ? tabs[0][0] : "");
+}
+function closeSheet() { const sh = $("#sheet"); sh.classList.remove("on"); sh._after = null; document.body.style.overflow = ""; }
+/* 긴 목록은 앞 n개만 보여 주고 나머지는 접어 둡니다 */
+function fold(items, n = 3, unit = "건") {
+  if (items.length <= n) return `<div class="fold">${items.join("")}</div>`;
+  return `<div class="fold">${items.slice(0, n).join("")}<div class="rest" hidden>${items.slice(n).join("")}</div><button class="morebtn">나머지 ${items.length - n}${unit} 보기</button></div>`;
+}
+const teamTime = t => t.spans.reduce((x, y) => x + y.sec, 0);
+function runTime(a) {
+  const all = a.teams.flatMap(t => t.spans), sec = x => { const [h, m, s] = x.split(":").map(Number); return h * 3600 + m * 60 + s; };
+  if (!all.length) return "";
+  const d = Math.max(...all.map(x => sec(x.end))) - Math.min(...all.map(x => sec(x.start)));
+  return d > 0 ? fmtSec(Math.round(d / 60) * 60 || d) : "";
+}
+function teamBody(key, a) {
+  const L = [];
+  const t = a.teams.find(x => x.key === key);
+  L.push(`<div class="it"><div class="t">${esc(t.summary)}</div><div class="s">${esc(t.role)}</div><div class="s">${t.cost.calls ? (a.agent ? `Claude 직접 수행 ${t.cost.calls}회 · API 비용 없음` : `${usd(t.cost.usd)} · 호출 ${t.cost.calls}회`) : "Claude 호출 없음"}${t.playbook ? ` · 지침 v${String(t.playbook).padStart(3, "0")}` : ""}</div>${t.spans.map(s => `<div class="s meta">${esc(s.start.slice(0, 5))}~${esc(s.end.slice(0, 5))} ${esc(s.label)}${s.sec ? " · " + fmtSec(s.sec) : ""}</div>`).join("")}</div>`);
+  if (key === "research") {
+    const c = a.research.collected || {};
+    if (c.total) L.push(`<div class="meta">수집 ${c.total}건 (네이버 ${c.naver ?? 0}건 포함)</div>`);
+    L.push(`<h4>후보 ${a.research.candidates.length}건</h4>` + fold(a.research.candidates.map(x => `<div class="it"><div class="t"><span class="chip">${esc(x.topic)}</span>${esc(x.title)}</div><div class="s">${esc(x.why_now)}</div>${x.figures.length ? `<div class="s">${x.figures.map(esc).join(" · ")}</div>` : ""}<div class="s">출처 ${x.sources.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.outlet)}${s.press ? "(보도자료)" : ""}</a>`).join(" · ")}</div></div>`)));
+    if (a.research.dropped.length) L.push(`<h4>제외 ${a.research.dropped.length}건</h4>` + fold(a.research.dropped.map(d => `<div class="it"><div class="t">${esc(d.title)}</div><div class="s">${esc(d.reason)}</div></div>`)));
+  } else if (key === "editor") {
+    L.push(`<h4>선정 ${a.editor.picks.length}건 (관심도 · 시의성 · 저장 가치)</h4>` + fold(a.editor.picks.map((p, i) => `<div class="it"><div class="t">${i + 1}. ${esc(p.title)}</div><div class="s"><span class="chip">${p.interest} · ${p.timeliness} · ${p.save_value}</span>${esc(p.reason)}</div></div>`), 4));
+    if (a.editor.rationale) L.push(`<div class="q">${esc(a.editor.rationale)}</div>`);
+    a.editor.revisions.forEach(r => L.push(`<h4>재작업 지시서 ${r.round}회차 (${r.items.length}건)</h4>` + fold(r.items.map(i => `<div class="it"><div class="t"><span class="chip ${i.origin === "fact" ? "r" : i.origin === "panel" ? "y" : ""}">${({ fact: "팩트", panel: "독자", check: "규격" })[i.origin] || esc(i.origin)}</span>${i.slide ? i.slide + "장" : "캡션 · 전체"}</div><div class="s">${esc(i.problem)}</div><div class="s">→ ${esc(i.direction)}</div></div>`))));
+    const f = a.editor.final || {};
+    L.push(`<h4>최종 판단</h4><div class="it"><div class="t">${esc(STATUS[f.status] || f.status || "-")}</div>${(f.flags || []).map(x => `<div class="s">· ${esc(x)}</div>`).join("")}</div>`);
+  } else if (key === "planner") {
+    [...a.planner.rounds].reverse().forEach((r, idx) => L.push(`<h4>${r.round === 0 ? "첫 기획" : `재작업 ${r.round}회차`} · ${r.slides.length}장</h4><div class="it"><div class="s">헤드라인 3안</div>${r.headlines.map((h, i) => `<div>${i + 1}. ${esc(h).replace(/\n/g, " ")}</div>`).join("")}</div>` +
+      `<div class="it">${fold(r.slides.map(s => `<div class="srow"><div class="n">${s.no}</div><div><b>${esc(s.title || ({ cover: "표지", toc: "목차", outro: "운영자 한마디" })[s.role] || "")}</b>${s.body ? `<div class="s">${esc(s.body)}</div>` : ""}</div></div>`), idx === 0 ? 4 : 0, "장")}</div>`));
+    if (a.planner.final) L.push(`<h4>운영자 한마디</h4><div class="q">${esc(a.planner.final.opinion)}</div>`);
+  } else if (key === "designer") {
+    L.push(`<div class="meta">${Object.entries(a.designer.basis_count).map(([k, v]) => `${BASIS[k] || k} ${v}장`).join(" · ")}</div>`);
+    L.push(`<h4>장별 이미지</h4><div class="it">${a.designer.images.map(im => `<div class="srow"><div class="n">${im.slide}</div><div><span class="chip ${im.basis === "self_made" ? "y" : "g"}">${esc(BASIS[im.basis] || im.basis)}</span>${esc(im.credit || "")}${im.page_url ? ` <a href="${esc(im.page_url)}" target="_blank" rel="noopener">원문</a>` : ""}${im.note && im.basis !== "self_made" ? "" : `<div class="s">${esc(NOTE(im.note))}</div>`}</div></div>`).join("")}</div>`);
+    a.designer.checks.forEach(c => { const n = c.issues.length + Object.keys(c.render).length; L.push(`<h4>${c.round}라운드 규격 검사: ${n ? n + "건" : "문제 없음"}</h4>` + (n ? `<div class="it">${c.issues.map(i => `<div class="s">· ${i.slide}장 ${esc(i.detail)}${i.blocking ? "" : " (참고)"}</div>`).join("") + Object.entries(c.render).map(([k, v]) => `<div class="s">· ${k}장 ${v.map(esc).join(", ")}</div>`).join("")}</div>` : "")); });
+  } else if (key === "reader_panel") {
+    [...a.panel].reverse().forEach(p => L.push(`<h4>${p.round}라운드 · 평균 ${p.avg}점 ${p.passed ? '<span class="chip g">통과</span>' : '<span class="chip r">미달</span>'} · 썸네일 ${p.pick}안</h4><div class="scorebar">${Object.entries(p.item_avg).map(([k, v]) => `<div><small>${ITEM[k]}</small><b>${v}</b></div>`).join("")}</div>` +
+      p.scores.map(s => `<div class="it"><div class="t">평가자 ${esc(s.reader)} <span class="chip">${["stop", "understand", "useful", "save", "finish"].map(k => s[k]).join(" · ")}</span></div><div class="s clamp">${esc(s.comment)}</div><span class="moretxt">더 보기</span>${s.fixes.length ? fold(s.fixes.map(f => `<div class="s">→ ${f.slide ? f.slide + "장" : "캡션"}: ${esc(f.problem)}</div>`), 2, "건 지적") : ""}</div>`).join("")));
+  } else if (key === "fact_check") {
+    [...a.fact].reverse().forEach(f => { const warn = f.risks.filter(r => r.severity !== "block"), block = f.risks.filter(r => r.severity === "block");
+      L.push(`<h4>${f.round}라운드 · ${f.matched}/${f.claims}건 일치 ${f.passed ? '<span class="chip g">통과</span>' : '<span class="chip r">미달</span>'}${Array.isArray(f.rechecked) ? ` · 다시 대조 ${f.rechecked.length}곳` : ""}</h4>` +
+      f.mismatches.map(c => `<div class="it"><div class="t"><span class="chip r">${c.verdict === "mismatch" ? "불일치" : "확인 불가"}</span>${esc(LOC(c.location))} "${esc(c.text)}"</div><div class="s">${esc(c.note)}</div>${c.quote ? `<div class="q">${esc(c.quote)}</div>` : ""}</div>`).join("") +
+      block.map(r => `<div class="it"><div class="t"><span class="chip r">막음</span>${esc(LOC(r.location))} · ${esc(RISK[r.type] || r.type)}</div><div class="s">${esc(r.detail)}</div></div>`).join("") +
+      (warn.length ? `<h4>주의 ${warn.length}건</h4>` + fold(warn.map(r => `<div class="it"><div class="t"><span class="chip y">${esc(RISK[r.type] || r.type)}</span>${esc(LOC(r.location))}</div><div class="s">${esc(r.detail)}</div></div>`), 2) : "")); });
+  } else {
+    L.push(`<div class="meta">이 팀은 회차 제작이 끝난 뒤 움직입니다: 게시 24 · 72시간 성과 수집, 일요일 주간 회고, 매월 1일 월간 점검. 결과는 GitHub 이슈 "[주간 회고]"로 옵니다.</div>`);
+  }
+  return L.join("");
+}
+function openAdmin(a, m) {
+  const SHORT = { research: "리서치", editor: "편집장", planner: "기획", designer: "제작", reader_panel: "독자 평가", fact_check: "팩트 검수", analyst: "성과 분석" };
+  const tabs = [["sum", "요약"], ...a.teams.map(t => [t.key, SHORT[t.key] || t.name])];
+  const f = (a.editor && a.editor.final) || {};
+  const summary = () => `
+    ${a.mock ? '<div class="meta" style="color:var(--warn)">가상 뉴스로 만든 시험 회차입니다.</div>' : ""}
+    <div class="kpis">
+      <div class="kpi"><small>결과</small><b>${esc(STATUS[a.status] || a.status || "-")}</b></div>
+      <div class="kpi"><small>걸린 시간</small><b>${esc(runTime(a) || "-")}</b></div>
+      <div class="kpi"><small>재작업</small><b>${a.editor.revisions.length}회</b></div>
+      <div class="kpi"><small>${a.agent ? "제작 방식" : "이번 회차 비용"}</small><b>${a.agent ? "Claude 직접" : usd(a.total_cost)}</b></div>
+    </div>
+    ${(f.flags || []).length ? `<div class="it">${f.flags.map(x => `<div class="s" style="color:var(--warn)">· ${esc(x)}</div>`).join("")}</div>` : ""}
+    <h4>팀별 진행 (누르면 자세히)</h4>
+    ${a.teams.map(t => `<button class="teamrow" data-go="${t.key}"><span class="nm">${esc(t.name)}</span><span class="du">${teamTime(t) ? fmtSec(teamTime(t)) : ""} ›</span><span class="sm">${esc(t.summary)}</span></button>`).join("")}
+    ${a.operator_edits.length ? `<h4>운영자 수정 ${a.operator_edits.length}건</h4>` + a.operator_edits.map(e => `<div class="it"><div class="t">${e.slide ? e.slide + "장" : "캡션"} · ${esc(e.request)}</div><div class="s">전: ${esc(e.before)}</div><div class="s">후: ${esc(e.after)}</div></div>`).join("") : ""}
+    <div class="meta">시작 ${esc((a.started_at || "").slice(11, 16))} · 이번 달 API 비용 ${usd(a.month_cost)} / $${a.budget}</div>`;
+  openSheet(`제작 과정 · ${fmtDate(m.date)} ${m.label}`, tabs, k => k === "sum" ? summary() : teamBody(k, a));
+}
+
+/* 설정 화면: 값을 바꾸면 GitHub 이슈로 변경 요청을 보냅니다 */
+async function openSettings() {
+  const st = await decJSON("settings.enc");
+  const val = i => i.kind === "weights" ? Object.values(i.value).join("/") : String(i.value);
+  const field = i => {
+    if (i.kind === "weights") return `<div class="w4">${Object.entries(i.value).map(([k, v]) => `<div><span>${esc(k)}</span><input type="number" inputmode="numeric" min="0" max="100" step="5" value="${v}" data-w="${esc(k)}"></div>`).join("")}</div>`;
+    if (i.kind === "time") return `<div class="in"><input type="time" value="${esc(i.value)}"></div>`;
+    return `<div class="in"><input type="number" inputmode="decimal" min="${i.lo}" max="${i.hi}" step="${i.step}" value="${i.value}"></div>`;
+  };
+  const html = () => `
+    <div class="meta">값을 바꾸고 아래 버튼을 누르면 GitHub에 변경 요청이 열립니다. 등록하면 1~2분 안에 반영되고 다음 회차부터 적용돼요.</div>
+    ${st.items.map(i => `<div class="set" data-key="${esc(i.key)}" data-kind="${i.kind}" data-cur="${esc(val(i))}"><label>${esc(i.label)}</label>${i.help ? `<div class="s">${esc(i.help)}</div>` : ""}${field(i)}</div>`).join("")}
+    <div class="set"><label>제작 시작 시각</label><div class="s">Claude 예약 작업에 있어 여기서는 바꿀 수 없어요. Claude에게 "시작을 7시 10분으로 바꿔 줘"처럼 말해 주세요.</div></div>
+    <h4>보낼 내용</h4><div class="cmd" id="setCmd">바꾼 값이 없어요</div>
+    <button class="btn" id="setSend" disabled>GitHub에서 변경 요청 열기</button>
+    <button class="btn sub" id="setCopy" disabled>명령 복사 (이슈 댓글에 붙여넣기)</button>
+    <div class="meta">GitHub 앱이 열려 내용이 비어 있으면 '명령 복사'를 누른 뒤 아무 회차 이슈에 댓글로 붙여넣어도 됩니다. 현재 장 수 ${st.slides[0]}~${st.slides[1]}장 · 마지막 갱신 ${esc((st.updated_at || "").slice(0, 16).replace("T", " "))}</div>`;
+  $("#sheet")._after = (k, body) => {
+    const cmd = () => {
+      const parts = [];
+      body.querySelectorAll(".set[data-key]").forEach(el => {
+        const v = el.dataset.kind === "weights" ? [...el.querySelectorAll("input")].map(x => x.value || "0").join("/") : el.querySelector("input").value;
+        const changed = v !== el.dataset.cur && v !== "";
+        el.classList.toggle("changed", changed);
+        if (changed) parts.push(`${el.dataset.key}=${v}`);
+      });
+      return parts.length ? "/설정 " + parts.join(" ") : "";
+    };
+    const refresh = () => { const c = cmd(); $("#setCmd").textContent = c || "바꾼 값이 없어요"; $("#setSend").disabled = !c || !st.repo; $("#setCopy").disabled = !c; };
+    body.querySelectorAll("input").forEach(x => x.addEventListener("input", refresh));
+    $("#setSend").addEventListener("click", () => { const c = cmd(); window.open(`https://github.com/${st.repo}/issues/new?title=${encodeURIComponent("[설정 변경] " + new Date().toLocaleDateString("ko-KR"))}&body=${encodeURIComponent(c)}`, "_blank", "noopener"); });
+    $("#setCopy").addEventListener("click", async () => { const c = cmd(); try { await navigator.clipboard.writeText(c); } catch { const t = document.createElement("textarea"); t.value = c; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); } toast("명령을 복사했어요"); });
+  };
+  openSheet("설정", [], html);
+  $("#sheet")._after("", $("#sheetBody"));
+}
+
+$("#viewer").addEventListener("click", () => $("#viewer").style.display = "none");
+$("#logout").addEventListener("click", () => { ls.del(STORE); location.reload(); });
+$("#sheetClose").addEventListener("click", closeSheet);
+$("#openSettings").addEventListener("click", () => openSettings().catch(() => toast("설정을 불러오지 못했어요")));
+$("#lockForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  $("#err").textContent = "";
+  try { await unlock($("#pw").value, $("#remember").checked); } catch (e) { $("#err").textContent = e.message || "열지 못했어요"; }
+});
+(async () => {
+  const saved = ls.get(STORE);
+  if (saved) { try { await unlock(saved, true); } catch { ls.del(STORE); } }
+})();
+</script>
+</body>
+</html>
